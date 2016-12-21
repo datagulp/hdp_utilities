@@ -1,4 +1,4 @@
-o "Starting Teragen execution ... "
+echo "Starting Teragen execution ... "
 
 mapmem=1024
 for mtask in 16 32 64 128
