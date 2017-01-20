@@ -1,4 +1,8 @@
+Multi-Node Cluster Setup with Optional NN , RM, Hive, Oozie HA integration with Ranger...
+
 Steps for Execution of Blueprint:
+
+
 
 curl -H "X-Requested-By: ambari" -X POST -u admin:admin http://localhost:8080/api/v1/blueprints/hdptest -d @clusterconfig.json
 
