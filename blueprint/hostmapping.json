@@ -1,0 +1,63 @@
+{
+  "blueprint" : "multi-node-hdp-cluster",
+  "default_password" : "admin",
+  "host_groups" :[
+    {
+      "name" : "master_1",
+      "hosts" : [
+        {
+          "fqdn" : "master001.ganeshrj.com"
+        }
+      ]
+    },
+    {
+      "name" : "master_2",
+      "hosts" : [
+        {
+          "fqdn" : "master002.ganeshrj.com"
+        }
+      ]
+    },
+    {
+      "name" : "master_3",
+      "hosts" : [
+        {
+          "fqdn" : "master003.ganeshrj.com"
+        }
+      ]
+    },
+    {
+      "name" : "slaves_1",
+      "hosts" : [
+        {
+          "fqdn" : "slave001.ganeshrj.com"
+        },
+        {
+          "fqdn" : "slave002.ganeshrj.com"
+        },
+        {
+          "fqdn" : "slave003.ganeshrj.com"
+        }
+      ]
+    },
+    {
+      "name" : "edge_1",
+      "hosts" : [
+        {
+          "fqdn" : "edge001.ganeshrj.com"
+        },
+        {
+          "fqdn" : "edge002.ganeshrj.com"
+        }
+      ]
+    },
+    {
+      "name" : "mgmt_1",
+      "hosts" : [
+        {
+          "fqdn" : "mgmt001.ganeshrj.com"
+        }  			
+      ]
+    }	
+  ]
+}
