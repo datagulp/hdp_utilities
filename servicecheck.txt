@@ -1,0 +1,5 @@
+### NOTE ### Change the Cluster name accordingly and run the curl command.
+curl -ivk -H "X-Requested-By: ambari" -u admin:admin -X POST -d @payload.txt http://localhost:8080/api/v1/clusters/clustername/request_schedules
+
+The payload.txt will be passed as an input to this command.The payload.txt will contain the list of services on which the service check will be executed on. 
+
