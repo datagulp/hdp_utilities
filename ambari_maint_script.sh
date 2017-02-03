@@ -3,35 +3,31 @@
 echo "Started"
 
 #############################################################
-# Functionalites added: 
+# Functionalites added:
 # --------------------
 #
-# 1. START Services 
+# 1. START Services
 # 2. STOP Services
 # 3. RESTART Services
-#
-#
-# To be added: 
-# ------------ 
-# 4. SRVCHK Run Service Checks on all the service 
+# 4. SRVCHK Run Service Checks on all the service
 #
 #############################################################
 
 
-. `dirname ${0}`/maint_ambari_services.properties
+. `dirname ${0}`/ambari_maint_script.properties
 
 STARTSTOPLIST=/home/ambari/maintenance_scripts/startstopparms.txt
 TEMP_FILE=/tmp/ambari_api_temp.file
 
 
 
-function wait() { 
+function wait() {
 
 finished=0
 retries=0
- 
+
 while [ $finished -ne 1 ]
- 
+
 do
    str=$(curl -s -u $AMBARI_ADMIN_USERID:$AMBARI_ADMIN_PASSWORD http://$AMBARI_SERVER:8080/api/v1/clusters/$CLUSTER_NAME/services/$1)
    if [[ $str == *"$2"* ]] || [[ $str == *"Service not found"* ]]
@@ -40,61 +36,52 @@ do
    fi
    sleep 6
 
-   let retries=$retries+1 
+   let retries=$retries+1
 
-   if [[ $retries == 30 ]] 
+   if [[ $retries == 30 ]]
    then
-      echo " Unable to start the service ... proceeding to NEXT one " 
+      echo " Unable to start the service ... proceeding to NEXT one "
       return
-   fi 
+   fi
 
    echo $1 " Polling for status ...$retries"
 done
 
 }
 
-function service_check() { 
+function service_check() {
 
 
-     echo " Running Service Check Components .... "
+     echo " Running Service Check Components  from payload file .... "
+
+     curl -ivk -H "X-Requested-By: ambari" -u  $AMBARI_ADMIN_USERID:$AMBARI_ADMIN_PASSWORD  -X POST -d @payload.txt http://$AMBARI_SERVER:8080/api/v1/clusters/$CLUSTER_NAME/request_schedules
+
+}
+
+function stop_services() {
+
+     echo " Stopping Components .... "
 
      for service in $ordered_services
      do
-         echo "RUNNING SERVICE CHECK FOR " $service " Service ...."
+         echo "STOPPING " $service " Service ...."
+
+         ##comment="Stop $service via REST"
+         ##echo $comment
 
          curl -u $AMBARI_ADMIN_USERID:$AMBARI_ADMIN_PASSWORD -i -H 'X-Requested-By: ambari' -X PUT -d '{"RequestInfo": {"context" : "Stopping service via REST before Reboot"}, "Body": {"ServiceInfo": {"state": "INSTALLED"}}}' http://$AMBARI_SERVER:8080/api/v1/clusters/$CLUSTER_NAME/services/$service
 
 
-         echo $service " Service Check started. Please logon on to Ambari to view results "
+         wait "$service" "INSTALLED"
+
+         echo $service " Stopped Successfully .... "
 
      done
 
 }
 
-function stop_services() { 
-  
-     echo " Stopping Components .... " 
 
-     for service in $ordered_services
-     do 
-         echo "STOPPING " $service " Service ...."
-      
-         ##comment="Stop $service via REST"
-         ##echo $comment
-
-         curl -u $AMBARI_ADMIN_USERID:$AMBARI_ADMIN_PASSWORD -i -H 'X-Requested-By: ambari' -X PUT -d '{"RequestInfo": {"context" : "Stopping service via REST before Reboot"}, "Body": {"ServiceInfo": {"state": "INSTALLED"}}}' http://$AMBARI_SERVER:8080/api/v1/clusters/$CLUSTER_NAME/services/$service
- 
-        
-         wait "$service" "INSTALLED"
-      
-         echo $service " Stopped Successfully .... "
-
-     done        
-
-}
-
-
-function start_services() { 
+function start_services() {
 
 
      echo " Starting Components .... "
@@ -117,7 +104,7 @@ function start_services() {
 
 }
 
-prep_start() { 
+prep_start() {
 
    echo " Preparing to " $1 " services on " $CLUSTER_NAME
 
@@ -127,13 +114,13 @@ prep_start() {
    echo $services
 
    if [ -f "$TEMP_FILE" ];
-   then 
+   then
        echo "Temp File exists ... Cleaning up... "
 
        rm -f $TEMP_FILE
-       touch $TEMP_FILE 
-   else 
-       touch $TEMP_FILE 
+       touch $TEMP_FILE
+   else
+       touch $TEMP_FILE
    fi
 
 
@@ -159,7 +146,7 @@ prep_start() {
 
    start_services ordered_services
 
-} 
+}
 
 prep_stop() {
 
@@ -174,7 +161,7 @@ prep_stop() {
        echo "Temp File exists ... Cleaning up... "
 
        rm -f $TEMP_FILE
-       touch $TEMP_FILE 
+       touch $TEMP_FILE
    else
        touch $TEMP_FILE
    fi
@@ -198,10 +185,10 @@ prep_stop() {
        echo "                                      "
 
 
-       if [ "$1" == "RESTART" ]; then 
+       if [ "$1" == "RESTART" ]; then
           echo "Proceeding with STARTING the components"
-          return 
-       else 
+          return
+       else
           exit 1
        fi
    fi
@@ -237,36 +224,36 @@ prep_stop() {
 ##########################################################################################################
 
 
-if [ "$1" == "STOP" ]; then 
+if [ "$1" == "STOP" ]; then
 
    prep_stop
 
 
-   echo "                                      " 
-   echo "*****All Services STOPPED Successfully *****" 
-   echo "                                      " 
+   echo "                                      "
+   echo "*****All Services STOPPED Successfully *****"
+   echo "                                      "
 
-elif [ "$1" == "START" ]; then 
+elif [ "$1" == "START" ]; then
 
    prep_start
 
    start_services ordered_services
 
-   echo "                                      " 
+   echo "                                      "
    echo "***All Services STARTED successfully ****"
-   echo "                                      " 
+   echo "                                      "
 
 elif [ "$1" == "RESTART" ]; then
 
-   echo " Preparing to " $1 " services on " $CLUSTER_NAME 
-   
+   echo " Preparing to " $1 " services on " $CLUSTER_NAME
+
    prep_stop $1
 
    echo "                                      "
    echo "***All Services STOPPED successfully ****"
    echo "                                      "
 
-    
+
    prep_start $1
 
    echo "                                      "
@@ -278,20 +265,19 @@ elif [ "$1" == "SVCCHK" ]; then
 
    echo " Preparing to " $1 " services on " $CLUSTER_NAME
 
-   echo " Construction in Progress.... "
+   service_check
 
 else
-    
+
    echo "                                                                        "
    echo "                                                                        "
    echo "Usage: ./maint_ambari_services.sh [START] [STOP] [RESTART] [SVCCHK]     "
    echo "                                                                        "
    echo "                                                                        "
-   exit 1 
+   exit 1
 
-fi 
+fi
 
 ## Cleanup temp file
 
 rm -f temp.file
-
