@@ -9,6 +9,7 @@ echo "Started"
 # 1. START Services
 # 2. STOP Services
 # 3. RESTART Services
+# 4. FORCESTOP Services
 #
 #############################################################
 
