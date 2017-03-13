@@ -24,11 +24,13 @@ status="STARTED"
 
 if [ "$1" == "STOP" ]; then
    checkval=0
+   sleeptime=10
 fi
 
 
 if [ "$1" == "START" ]; then
    checkval=5
+   sleeptime=20
 fi
 
 while [ $finished -ne 1 ]
@@ -36,20 +38,19 @@ while [ $finished -ne 1 ]
 do
    serv=`curl -u $AMBARI_ADMIN_USERID:$AMBARI_ADMIN_PASSWORD  -H "X-Requested-By: ambari" -X GET  http://$AMBARI_SERVER:8080/api/v1/clusters/$CLUSTER_NAME/services/?fields=ServiceInfo/state | grep $status  |wc -l`
 
+   echo $serv " ~~~~ "  $checkval
+
    if [ $serv == $checkval ]; then
-
       finished=1
-
    fi
 
-
-   sleep 6
+   sleep $sleeptime
 
    let retries=$retries+1
 
    if [[ $retries == 30 ]]
    then
-      echo " Unable to start the service ... proceeding to NEXT one "
+      echo " Unable to start all the service ... Please look into Ambari console for further logs "
       return
    fi
 
@@ -60,7 +61,7 @@ if [ $finished == 1 ]; then
 
    if [ "$1" == "START" ]; then
 
-       echo " $serv started successfully ... Please logon to Ambari and monitor the rest of the services if they are up "
+       echo " $serv started successfully ... Please logon to Ambari and monitor rest of the services if they are up "
    else
        echo " All services $1 successfully "
    fi
@@ -162,8 +163,12 @@ prep_stop() {
 
    else
 
-      echo "Please make sure the running applications are stopped or gracefully shutdown..."
+     if [ "$1" == "FORCESTOP" ]; then
+        echo " There are $RUNNING_APPS application(s) running. Forcing a STOP on the Cluster "
+     else
+        echo "There are $RUNNING_APPS application(s) running. Please make sure the running applications are stopped or gracefully shutdown..."
       exit 1
+     fi
 
    fi
 
@@ -212,12 +217,20 @@ elif [ "$1" == "RESTART" ]; then
    echo "***All Services RESTARTED successfully ****"
    echo "                                      "
 
+elif [ "$1" == "FORCESTOP" ]; then
+
+   prep_stop "$1"
+
+
+   echo "                                      "
+   echo "*****All Services STOPPED Successfully *****"
+   echo "                                      "
 
 else
 
    echo "                                                                        "
    echo "                                                                        "
-   echo "Usage: ./maint_ambari_services.sh [START] [STOP] [RESTART]              "
+   echo "Usage: ./maint_ambari_services.sh [START] [STOP] [RESTART] [FORCESTOP]  "
    echo "                                                                        "
    echo "                                                                        "
    exit 1
