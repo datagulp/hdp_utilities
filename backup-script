@@ -1,0 +1,239 @@
+
+#!bin/bash
+
+############################################
+#This backup script performs below tasks
+#   Backup important site xml files
+#   Backup Ambari server configs
+#   Backup Ambari agent configs
+#   Backup postgres Database
+#   Backup Hive meta store
+#   Backup the filesystem metadata for hadoop using namenode url
+#   Change the variables to match appropriate env and put this script in crontab
+#Version : 1.0
+#Author : Arun Voma
+#Validation : <Pending>
+#HDP Version : 2.2
+#PREREQS:
+#Please create this directory /opt/backup/scripts/ and copy this script file.
+#Please create this directory /opt/backup/log/  and create a file  backup.log
+################################################
+
+SCRIPT_DIR="/opt/backup/scripts/"
+LOGFILE="/opt/backup/log/backup.log"
+NOW=$(date +"%d-%m-%Y")
+
+printHeading()
+{
+echo -e "\n${1}\n/////////////////////////////////\n" #>> $LOGFILE 2>&1
+}
+
+
+echo "Started  Execution of Backup Script on `hostname` @ $NOW"
+echo "########################################################"
+
+pre_req() {
+# Make sure only root can run our script .If you want you customize the user account.
+if [ "$(whoami)" != "root" ]; then
+echo "This script must be run as root" 1>&2
+exit 1
+fi
+}
+
+
+initialize()
+{
+
+printHeading "In Intialize() Function"
+#SITE_XML_DIRS="/etc/hive-hcatalog /etc/hadoop /etc/hbase /etc/zookeeper /etc/storm /etc/falcon /etc/oozie /etc/hive-webhcat
+#/etc/accumulo /etc/hive /etc/pig/conf /etc/sqoop/conf /etc/flume/conf /etc/mahout/conf /etc/oozie/conf /etc/hue/conf /etc/zookeeper/conf
+#"
+
+AM_SRV_CONF="/etc/ambari-server"
+SITE_XML_DIRS=${AM_SRV_CONF}
+
+AM_AG_CONF="/etc/ambari-agent"
+KEYTABS_DIR="/etc/security/keytabs"
+#BACKUP_PATH="/tmp/backup" #path to store metadata
+
+
+### MySQL Setup ###
+MUSER="ambari"
+MPASS="bigdata"
+MHOST=`hostname`
+MYSQL="$(which mysql)"
+MYSQLDUMP="$(which mysqldump)"
+GZIP="$(which gzip)"
+
+#NN BACKUP variables
+TODAY=$(date +"%Y-%m-%d-%H%M")  #date and time
+BACKUP_PATH="/home/hdfs/backup" #path to store metadata
+NN_IP="192.168.1.62"            #Namenode ip address
+NN_PORT="50070"                 #Namenode http port
+RT_DAYS="3"                     #Rentention in days
+}
+
+
+
+check_dir()
+{
+printHeading "In Check_dir function"
+#Logic
+if [ -d ${BACKUP_PATH} ]; then
+  cd ${BACKUP_PATH}
+else
+  mkdir -p ${BACKUP_PATH} && cd ${BACKUP_PATH}
+fi
+}
+
+
+
+backup() {
+
+printHeading "In backup function"
+
+#STEP-1-Backup important site xml files
+
+echo "creating TAR file for /etc on all hosts" 
+
+for dir in $SITE_XML_DIRS
+do
+dirname=`echo $dir | tr '/' '_' `
+tar --create --gzip --preserve-permissions --recursion --absolute-names -f $NOW${dirname}.tar.gz $dir
+echo "......finished creating the TAR file with filename $now.$dirname.tar.gz " + $(date)
+done
+
+
+#STEP-2 Backup Ambari server configs
+tar --create --gzip --preserve-permissions --recursion --absolute-names -f $NOW.ambari_server.tar.gz $AM_SRV_CONF
+
+#STEP-3 Backup Ambari agent configs
+tar --create --gzip --preserve-permissions --recursion --absolute-names -f $NOW.ambari_agent.tar.gz $AM_AG_CONF
+
+#STEP-4 AMBARI_SERVER DATABASE BACKUP
+
+dbtype=`grep server.jdbc.database /etc/ambari-server/conf/ambari.properties | awk -F "=" '{print $2}'`
+
+if [[ "$dbtype" == "mysql" ]]
+then
+	
+	dbname=`grep server.jdbc.schema /etc/ambari-server/conf/ambari.properties | awk -F "=" '{print $2}'`
+	FILE=${BACKUP_PATH}/mysql-$dbname.$NOW.sql.gz
+	$MYSQLDUMP -u $MUSER -h $MHOST -p$MPASS $dbname | $GZIP -9 > $FILE
+
+elif [[ "$dbtype" == "psql" ]]
+then
+#Postgres setup
+PGDUMP="$(which pgdump)"
+PG_AS_USER="ambari"
+PG_MR_USER="mapred"
+DB_AS_NAME="ambari"
+DB_MR_NAME ="ambarirca"
+PG_AS_PASS="bigdata"
+PG_MR_PASS="mapredpass"
+PSQL="$(which mysql)"
+GZIP="$(which gzip)"
+	pg_dump -U $AMBARI-SERVER-USERNAME ambari > ambari.sql Password: $AMBARI-SERVER-PASSWORD 
+	pg_dump -U $MAPRED-USERNAME ambarirca > ambarirca.sql Password: $MAPRED-PASSWORD
+fi
+
+}
+
+backup_hue() 
+{
+
+#HUE.INI FIle
+/etc/hue/conf/hue.ini file
+if engine=sqllite3
+name=/var/lib/hue/hue/desktop.db
+
+}
+#calling functions
+
+pre_req
+initialize
+check_dir
+backup
+
+backup_all_databases()
+{
+### Start MySQL Backup ###
+# Get all databases name
+DBS="$($MYSQL -u $MUSER -h $MHOST -p$MPASS -Bse 'show databases')"
+for db in $DBS
+do
+ FILE=$BACKUP/mysql-$db.$NOW-$(date +"%T").gz
+ $MYSQLDUMP -u $MUSER -h $MHOST -p$MPASS $db | $GZIP -9 > $FILE
+done
+}
+
+backup_NN_FSIMAGE()
+{
+#STEP-7 
+#download fsimage file
+wget http://${NAMENODE_IP}:${NN_PORT}/getimage?getimage=1 -O fsimage -nv
+if [ $? -eq 0 ]; then
+  #download edits file
+  wget http://${NAMENODE_IP}:${NN_PORT}/getimage?getedit=1 -O edits -nv
+  if [ $? -eq 0 ]; then
+    #compress the fsimage and edits file
+    tar -zcf namenode-${TODAY}.tar.gz fsimage edits
+    if [ $? -eq 0 ]; then
+      #delete all backup up to days specified in RT_DAYS
+      find -atime +${RT_DAYS} -name "namenode*" -exec rm {} \;
+      rm fsimage #remove downloaded fsimage
+      rm edits   #remove downloaded edits
+    fi
+  else
+    rm fsimage  #remove downloaded fsimage
+    exit 4
+  fi
+fi
+}
+
+
+kerberos_backup(){
+
+echo "Backing kereberos files"
+
+check_dir()
+{
+printHeading "In Check_dir function"
+#Logic
+if [ -d ${KDC_BACKUP_PATH} ]; then
+  cd ${KDC_BACKUP_PATH}
+else
+  mkdir -p ${KDC_BACKUP_PATH} && cd ${KDC_BACKUP_PATH}
+fi
+}
+
+#STEP-1 krb5 file
+/etc/krb5.conf /var/kerberos/krb5kdc/kdc.conf
+#STEP-2 Keytabs Backup
+tar --create --gzip --preserve-permissions --recursion --absolute-names -f $now.keytabs.`hostname`.tar.gz $KEYTABS_DIR
+#STEP-3 KDC BACKUP
+$KDB5_UTIL DUMP -verbose $DUMPFILE
+kdb5_util dump -verbose dumpfile
+}
+
+
+retention() {
+printHeading "In Retention function"
+#delete all backup up to days specified in RT_DAYS
+      #find -atime +${RT_DAYS} -name "*.tar.gz" -exec rm {} \;
+      echo " Deleting below files-Check once and modify code"
+       find -atime +${RT_DAYS} -name "*.tar.gz" -exec ls -l  {} \;
+}
+
+#calling functions
+
+#pre_req
+#initialize
+#check_dir
+#backup
+#retention
+
+echo "Completed Execution of Script on hostname @ $NOW"
+echo "########################################################"
+
+
