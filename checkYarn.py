@@ -33,13 +33,14 @@ avlMBs=rmsnap["clusterMetrics"]["availableMB"]
 allocMBs=rmsnap["clusterMetrics"]["allocatedMB"]
 totalMBs=rmsnap["clusterMetrics"]["totalMB"]
 
-print "Available MB : " + str(avlMBs)
-print "Allocated MB : " + str(allocMBs)
-print "Total     MB : " + str(totalMBs)
+print "Available GB     : " + str(float(avlMBs)/1024)
+print "Allocated GB     : " + str(float(allocMBs)/1024)
+print "Total     GB     : " + str(float(totalMBs)/1024)
+print "Threshold %      : " + threshold
 
 used_percent=float(allocMBs)/float(totalMBs)*100
 
-print "Used Percent : " + str(used_percent)
+print "Currently Used % : " + str(used_percent)
 
 if float(used_percent) > float(threshold):
     outApps="ALERT:: YARN Usage currently at : " + str(float(used_percent)) + " % exceeding the threshold set at " + threshold + " % "
