@@ -6,36 +6,73 @@ import calendar
 import urllib2
 import time
 import re
+import sys
 
 ### Importing Properties JSON
-
 
 inpprop = json.load(open("runningJobs.properties"))
 
 rmserver=inpprop["rmserver"]
 rmport=inpprop["rmport"]
 status=inpprop["status"]
-threshold=inpprop["threshold"]
+threshold=inpprop["longRuuningthresholdHrs"]
 exclusionApplicationType=inpprop["exclusionApplicationType"]
 exclusionQueue=inpprop["exclusionQueue"]
 exclusionID=inpprop["exclusionID"]
 opFile=inpprop["opFile"]
+opYARNFile=inpprop["opYARNFile"]
+thresholdPercent=inpprop["RMthresholdPercent"]
+
 
 outfile=open(opFile, 'w')
+outYARNfile=open(opYARNFile, 'w')
 
 ### Cleanup the output file
 outfile.truncate()
+outYARNfile.truncate()
 
 print " Curling ", rmserver , ":", rmport , " for " , status , " jobs "
 
 url="http://"+rmserver+":"+rmport+"/ws/v1/cluster/apps?state="+status
+
+urlmet="http://"+rmserver+":"+rmport+"/ws/v1/cluster/metrics"
 
 ##print url
 ##url='http://grj-8.field.hortonworks.com:8088/ws/v1/cluster/apps?state=RUNNING'
 
 res=urllib2.urlopen(url).read()
 rmsnap=json.loads(res)
+
+##if rmsnap["apps"] and not rmsnap["apps"].isspace():
+if rmsnap["apps"]:
+    print "***** Found Running Jobs ***** "
+else:
+    print "***** No Running jobs ***** "
+    sys.exit(0)
+
 appls=rmsnap["apps"]["app"]
+
+metres=urllib2.urlopen(urlmet).read()
+rmmet=json.loads(metres)
+
+avlMBs=rmmet["clusterMetrics"]["availableMB"]
+allocMBs=rmmet["clusterMetrics"]["allocatedMB"]
+totalMBs=rmmet["clusterMetrics"]["totalMB"]
+
+print "Available GB     : " + str(float(avlMBs)/1024)
+print "Allocated GB     : " + str(float(allocMBs)/1024)
+print "Total     GB     : " + str(float(totalMBs)/1024)
+print "Threshold %      : " + thresholdPercent + " %"
+
+used_percent=float(allocMBs)/float(totalMBs)*100
+
+print "Currently Used % : " + str(used_percent) + " %"
+
+if float(used_percent) > float(thresholdPercent):
+    outYARNApps="ALERT:: YARN Usage currently at : " + str(float(used_percent)) + " % exceeding the threshold set at " + thresholdPercent + " % "
+    outYARNfile.write(outYARNApps)
+    outYARNfile.write("\n")
+
 
 dts = datetime.datetime.utcnow().utctimetuple()
 currentetime=calendar.timegm(dts)
@@ -57,7 +94,13 @@ for appl in appls:
     ##print (curr_dt - job_run_dt).days
     runhrs=(int(curr_dt_ts - job_run_dt_ts) / 60 ) / 60
 
-    ignoreFlag=0
+    outApps="App Id: " + appl["id"] + " State:  " + appl["state"] + " Hours Running :  " + str(runhrs)  + " Hrs.   User :  " + appl["user"] + " Queue :  " + appl["queue"] +  " Application Type :  " + appl["applicationType"] + "    Running Containers : " + str(appl["runningContainers"]) + " Queue Usage % : " + str(appl["queueUsagePercentage"]) + " Cluster Usage % : " + str(appl["clusterUsagePercentage"]) + " Memory Allocated/Used in MB : " + str(appl["allocatedMB"])
+
+
+    if float(used_percent) > float(thresholdPercent):
+        outYARNfile.write(outApps)
+        outYARNfile.write("\n")
+
     if int(runhrs) > int(threshold):
 
         if re.search (appl["user"], exclusionID):
@@ -67,10 +110,10 @@ for appl in appls:
         elif re.search (appl["applicationType"], exclusionApplicationType):
            print appl["id"] + " Satisfied Application Type  execlusion List "
         else:
-           outApps="App Id: " + appl["id"] + " State:  " + appl["state"] + " Hours Running :  " + str(runhrs)  + " Hrs.   User :  " + appl["user"] + " Queue :  " + appl["queue"] +  " Application Type :  " + appl["applicationType"]
            outfile.write(outApps)
            outfile.write("\n")
 
 ### Closing the file
 
 outfile.close()
+outYARNfile.close()
