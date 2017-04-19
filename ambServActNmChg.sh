@@ -93,7 +93,7 @@ function change_user_name() {
             nuser=\"$newuser$NEW_SRV_USER_NAME\"
             echo "  Updating $envfile with " $newuservar "---" $nuser
 
-            setuser=`echo "/var/lib/ambari-server/resources/scripts/configs.sh set  $AMBARI_SERVER ${CLUSTER_NAME} $envfile $newuservar $nuser"`
+            setuser=`echo "/var/lib/ambari-server/resources/scripts/configs.sh -u $AMBARI_ADMIN_USERID -p $AMBARI_ADMIN_PASSWORD set  $AMBARI_SERVER ${CLUSTER_NAME} $envfile $newuservar $nuser"`
 
             eval $setuser
 
@@ -106,7 +106,7 @@ function change_user_name() {
       while read line
         do
             envfile=`echo $line |awk -F':' '{print $1}'`
-            /var/lib/ambari-server/resources/scripts/configs.sh get  $AMBARI_SERVER ${CLUSTER_NAME} $envfile |grep user\"
+            /var/lib/ambari-server/resources/scripts/configs.sh -u $AMBARI_ADMIN_USERID -p $AMBARI_ADMIN_PASSWORD get  $AMBARI_SERVER ${CLUSTER_NAME} $envfile |grep user\"
 
         done < amb_srv_usr_backup.txt
 
@@ -145,7 +145,7 @@ function get_user_name() {
 	for env in $envvars
 	do
 
-	   userlist=`/var/lib/ambari-server/resources/scripts/configs.sh get  $AMBARI_SERVER ${CLUSTER_NAME} $env |grep user\" |grep ':'`
+	   userlist=`/var/lib/ambari-server/resources/scripts/configs.sh -u $AMBARI_ADMIN_USERID -p $AMBARI_ADMIN_PASSWORD get  $AMBARI_SERVER ${CLUSTER_NAME} $env |grep user\" |grep ':'`
 
            ####echo $userlist
 
@@ -231,7 +231,7 @@ function restore_change_user_name() {
             nuser=\"$newuser\"
             echo "  Updating $envfile with " $newuservar "---" $nuser
 
-            setuser=`echo "/var/lib/ambari-server/resources/scripts/configs.sh set  $AMBARI_SERVER ${CLUSTER_NAME} $envfile $newuservar $nuser"`
+            setuser=`echo "/var/lib/ambari-server/resources/scripts/configs.sh -u $AMBARI_ADMIN_USERID -p $AMBARI_ADMIN_PASSWORD set  $AMBARI_SERVER ${CLUSTER_NAME} $envfile $newuservar $nuser"`
 
             eval $setuser
 
@@ -244,7 +244,7 @@ function restore_change_user_name() {
       while read line
       do
             envfile=`echo $line |awk -F':' '{print $1}'`
-            /var/lib/ambari-server/resources/scripts/configs.sh get  $AMBARI_SERVER ${CLUSTER_NAME} $envfile |grep user\"
+            /var/lib/ambari-server/resources/scripts/configs.sh -u $AMBARI_ADMIN_USERID -p $AMBARI_ADMIN_PASSWORD get  $AMBARI_SERVER ${CLUSTER_NAME} $envfile |grep user\"
 
       done < amb_srv_usr_backup_RESTORE.txt
 
