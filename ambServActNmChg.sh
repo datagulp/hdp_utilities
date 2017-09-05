@@ -1,4 +1,10 @@
 #!/bin/bash
+### For Group changes: 
+## /var/lib/ambari-server/resources/scripts/configs.sh -u admin -p  <<password>> set <<ambari_host>> <<cluster_name>> cluster-env  user_group << New group Name>>
+
+## /var/lib/ambari-server/resources/scripts/configs.sh -u admin -p <<password>>  set  <<ambari_host>> <<cluster_name>>  ranger-env ranger_group <<new group name >>
+
+
 
 echo " ****** Starting Script to Change Service User names in Ambari ***** "
 
