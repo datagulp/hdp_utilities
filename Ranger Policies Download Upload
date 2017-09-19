@@ -1,0 +1,24 @@
+To get the Policy: 
+
+curl -iv -u admin:admin -H "Content-type:application/json" -X GET http://RangedAdminHost:6080/service/public/api/policy/
+
+Pipe the above Curl command into a policy.json file. 
+
+To get the Repo: 
+
+curl -iv -u admin:admin -H "Content-type:application/json" -X GET http://RangedAdminHost:6080/service/public/api/repository
+
+Pipe the above to a repo.json
+
+
+
+To apply this back: 
+
+First Create the repo: 
+
+curl -iv -u admin:admin -d @repo.json -H "Content-type:application/json" -X POST http://RangedAdminHost:6080/service/public/api/repository
+
+Then Apply the policy:
+
+curl -iv -u admin:admin -d @ranger_policies.json -H "Content-type:application/json" -X POST  http://RangedAdminHost:6080/service/public/api/policy
+
