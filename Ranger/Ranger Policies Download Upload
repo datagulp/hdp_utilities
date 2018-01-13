@@ -22,3 +22,7 @@ Then Apply the policy:
 
 curl -iv -u admin:admin -d @ranger_policies.json -H "Content-type:application/json" -X POST  http://RangedAdminHost:6080/service/public/api/policy
 
+To apply the Group Level Changes: 
+
+/var/lib/ambari-server/resouces/scripts/configs.sh -u admin -p password set ambari_server_FDQN <cluster_name> cluster-env user_group ux_hadoop
+/var/lib/ambari-server/resouces/scripts/configs.sh -u admin -p password set ambari_server_FDQN <cluster_name> ranger-env ranger_group ux_ranger
