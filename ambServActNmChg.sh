@@ -1,6 +1,9 @@
 #!/bin/bash
 
 echo " ****** Starting Script to Change Service User names in Ambari ***** "
+## To Change Group names , it is a manual process: 
+##/var/lib/ambari-server/resouces/scripts/configs.sh -u AmbariUserId -p AmbariPassword set AmbariServer Clustername cluster-env user_group ux_hadoop
+##/var/lib/ambari-server/resouces/scripts/configs.sh -u AmbariUserId -p AmbariPassword setAmbariServer Clustername  ranger-env ranger_group ux_ranger
 
 #######################################################################################################
 #
