@@ -1,5 +1,15 @@
 package com.ganeshrj.hive.jdbcTest;
 
+
+/* This code mimics the Hive Beeline command to run Queries from Extended system... 
+ * 
+ * Sample String: 
+ * java -jar HiveJDBCConnKrb.jar "jdbc:hive2://grj-3.field.hortonworks.com:10000/default;principal=hive/_HOST@GANESHRJ.COM?hive.execution.engine=tez" "ambari-qa-hdp228@GANESHRJ.COM" "/etc/security/keytabs/smokeuser.headless.keytab" "select distinct a  from hivetest.test1"
+ * 
+ * Copyright @ Ganesh Rajagopal  
+ */
+
+
 import java.io.IOException;
 import java.sql.*;
 import java.util.Scanner;
@@ -20,10 +30,11 @@ public class TestHiveJDBCKrb {
 	static String driverName = "org.apache.hive.jdbc.HiveDriver";
 	static String Current_UserPrincipal="";
 	static String User_password=""; 
- 
- 
-	 
-    
+	static String Connection_Principal;
+	static String Connection_Keytab;
+	static String Connection_String;
+	static String Connection_QueryString;
+  
     public static class MyCallbackHandler implements CallbackHandler {
 
         private Scanner reader;
@@ -51,14 +62,11 @@ public class TestHiveJDBCKrb {
     }
     
      
-    
    
    public static Subject kinit()  {
      
-	   
 	   Subject CurrentUserSubject = null;
-	   	   
-	    
+	 
 	   try {
 	    	   LoginContext lc = new LoginContext("TestHiveJDBCKrb", new MyCallbackHandler());
      	  
@@ -69,7 +77,6 @@ public class TestHiveJDBCKrb {
 			e.printStackTrace();
 			System.exit(1);
 		}
-	   
 	   
 	   return CurrentUserSubject; 
 	   
@@ -87,24 +94,74 @@ public class TestHiveJDBCKrb {
 						
 			System.out.println (" No of args passed : " + args.length);
 			
+			if (args.length < 2 ) { 
+				System.out.println("Need atleast 2 arguments - Connection Information and Query String. Note that Principal and Keytabs are optional");
+				
+				System.out.println("Sample Input String Below : ");
+				System.out.println("=========================== ");
+				
+				System.out.println("java -jar HiveJDBCConnKrb.jar \"jdbc:hive2://<HS2 Host>:10000/<db>;principal=hive/_HOST@REALM.COM?hive.execution.engine=tez\"  \"Query String\" \"principal@REALM.COM\" \"keytab file\"");
+			}
 			
-			/* Uncomment below for actual code */ 
-		
 			
-			 System.out.println(args[0]);
-			 System.out.println(args[1]);
-			 System.out.println(args[2]);
-			 System.out.println(args[3]);
- 
+			if (args.length == 2 ) { 
+            	
+	      	     System.out.println("***********************");
+	             System.out.println("Echoing Input Parms ");
+	           	 
+	   			 System.out.println("Arg 1 :  " + args[0]);
+	   			 System.out.println("Arg 2 :  " + args[1]);
+	      	     System.out.println("***********************");
+			}
+			
+			else { 
+				try { 
+	            	
+		      	     System.out.println("***********************");
+		             System.out.println("Echoing Input Parms ");
+		           	 
+		   			 System.out.println("Arg 1 :  " + args[0]);
+		   			 System.out.println("Arg 2 :  " + args[1]);
+		   			 System.out.println("Arg 3 :  " + args[2]);
+		   			 System.out.println("Arg 4 :  " + args[3]);
+		   			 
+		   			 System.out.println("***********************");
+		          	 
+		            }
+				  	 catch (ArrayIndexOutOfBoundsException e) { 
+				  		 System.out.println( " Invalid Arguments Entered. Missing Principal or Keytab !!! ");
+				  		 
+						 System.out.println("Sample Input String Below : ");
+						 System.out.println("=========================== ");
+							
+							
+				  		 System.out.println("java -jar HiveJDBCConnKrb.jar \"jdbc:hive2://<HS2 Host>:10000/<db>;principal=hive/_HOST@REALM.COM?hive.execution.engine=tez\"  \"Query String\" \"principal@REALM.COM\" \"keytab file\"   \"principal\" \"keytab file \"");
+						 System.exit(1);
+				  	 }
+				
+			}
+            
 			 
+			/* Uncomment below for actual code */ 
+            
+            
 			if (args.length > 0  && args.length <= 4) { 
 					
-					String Connection_String=args[0].trim();
-				    String Connection_Principal=args[1].trim();
-					String Connection_Keytab=args[2].trim();
-					String Connection_QueryString=args[3].trim();
-		 
-			
+					 Connection_String=args[0].trim();
+					 Connection_QueryString=args[1].trim();
+					
+					if (args.length > 2) { 
+						
+						try { 
+						     Connection_Principal=args[2].trim();
+							 Connection_Keytab=args[3].trim();
+						}
+						catch (ArrayIndexOutOfBoundsException e) { 
+					  		 System.out.println( " Invalid Arguments Entered. Check argument 3 & 4 ... " + args.length);
+							 System.exit(1);
+					  	 }
+					}
+ 
 		    // Test Stub below
 			
 			/*
@@ -194,9 +251,7 @@ public class TestHiveJDBCKrb {
 
 				}
 					
-	            
-
-		 
+			 
 				if (connection != null) {
 					System.out.println ("HiveServer2  JDBC Connection Successful... ");
 					
