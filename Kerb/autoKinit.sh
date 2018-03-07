@@ -21,7 +21,7 @@ do
    echo "${user[0]}"
    echo "${user[1]}"
    pdsh "sudo klist -kt /etc/security/keytabs/${user[1]}.headless.keytab"
-   pdsh "sudo -u ${user[0]} kinit -kt /etc/security/keytabs/${user[1]}.headless.keytab ${user[0]}@US.BANK-DNS.COM"
+   pdsh "sudo -u ${user[0]} kinit -kt /etc/security/keytabs/${user[1]}.headless.keytab ${user[0]}@REALM.COM"
    pdsh "ls -lart  /tmp/krb5cc* |grep -w ${user[0]}" >> /home/ambari/scripts/keytabout.txt
 
 done < /home/ambari/scripts/autoKinit.users
