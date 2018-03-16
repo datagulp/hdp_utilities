@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Copyright @ Ganesh Rajagopal 
-
+## Pre-req - pdsh should be installed
 
 echo " ****** Executing kinit on other Computes for the ids from property file  ***** "
 
