@@ -1,4 +1,5 @@
 #!/bin/bash
+## Copyright @ Ganesh Rajagopal 
 
 
 echo " ****** Executing kinit on other Computes for the ids from property file  ***** "
