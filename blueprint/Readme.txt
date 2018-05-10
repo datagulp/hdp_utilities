@@ -1,3 +1,7 @@
+Extract BP: curl -H "X-Requested-By: ambari" -X GET -u admin:admin http://localhost:8080/api/v1/clusters/testc1?format=blueprint
+
+
+
 Multi-Node Cluster Setup with Optional NN , RM, Hive, Oozie HA integration with Ranger...
 
 Steps for Execution of Blueprint:
