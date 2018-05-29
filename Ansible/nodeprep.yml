@@ -1,1 +1,63 @@
+---
+  - name: Genenric Install on all the nodes
+    hosts: all
+    tasks:
+      - name: get server hostname
+        command: hostname
 
+      - name: Get ambari Repo
+        get_url:
+          url: http://public-repo-1.hortonworks.com/ambari/centos7/2.x/updates/2.6.2.0/ambari.repo
+          dest: /etc/yum.repos.d/ambari.repo
+          mode: 0444
+
+      - name: Get HDP Repo
+        get_url:
+          url: http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.6.5.0/hdp.repo
+          dest: /etc/yum.repos.d/HDP.repo
+          mode: 0444
+
+
+      - name: Install JDK from repo ntpd, wget , ambari-agent, zip, unzip
+        yum: name={{item}} state=latest update_cache=yes
+        with_items:
+           - http://avm-1.field.hortonworks.com/jdk-7u51-linux-x64.rpm
+           - ntpd*
+           - wget
+           - zip
+           - unzip
+           - ambari-agent
+
+      - name: run commands to set rc.local
+        shell:
+           echo never > /sys/kernel/mm/transparent_hugepage/enabled
+      - name: run commands to set rc.local
+        shell:
+           echo never > /sys/kernel/mm/transparent_hugepage/defrag
+      - name: run commands to set swappiness
+        shell:
+           sysctl vm.swappiness=1
+      - name: run commands to set  ulimits
+        shell:
+           printf '\n*                soft    nofile          65536\n*                hard    nofile          65536\n' >> /etc/security/limits.conf
+
+      - name: Update rc.local file
+        shell:
+           printf '\n
+              if test -f /sys/kernel/mm/redhat_transparent_hugepage/enabled; then \n
+                  echo never > /sys/kernel/mm/transparent_hugepage/enabled\n
+              fi\n\n
+
+             if test -f /sys/kernel/mm/redhat_transparent_hugepage/defrag; then \n
+                  echo never > /sys/kernel/mm/transparent_hugepage/defrag\n
+              fi\n\n'>> /etc/rc.local
+
+      - name: Set selinux
+        shell:
+             setenforce 0 && sed -i 's/SELINUX=enforcing/SELINUX=permissive/g' /etc/selinux/config
+
+      - name: Start Services
+        service:
+           name: ntpdate
+           state: started
+           enabled: yes
