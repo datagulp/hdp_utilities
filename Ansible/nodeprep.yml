@@ -11,12 +11,6 @@
           dest: /etc/yum.repos.d/ambari.repo
           mode: 0444
 
-      - name: Get HDP Repo
-        get_url:
-          url: http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.6.5.0/hdp.repo
-          dest: /etc/yum.repos.d/HDP.repo
-          mode: 0444
-
 
       - name: Install JDK from repo ntpd, wget , ambari-agent, zip, unzip
         yum: name={{item}} state=latest update_cache=yes
@@ -56,8 +50,43 @@
         shell:
              setenforce 0 && sed -i 's/SELINUX=enforcing/SELINUX=permissive/g' /etc/selinux/config
 
+
+      - name: Update etc hosts file on all the nodes
+        lineinfile:
+           dest: /etc/hosts
+           regexp: '{{ hostvars[item].ansible_default_ipv4.address }}.*{{ item }}$'
+           line: "{{ hostvars[item].ansible_default_ipv4.address }} {{item}}"
+        with_items: "{{ groups.all }}"
+
+
       - name: Start Services
         service:
            name: ntpdate
+           state: started
+           enabled: yes
+
+
+  - name: Management Node Installation only
+    hosts: ambari
+    tasks:
+
+      - name: Get HDP Repo
+        get_url:
+          url: http://public-repo-1.hortonworks.com/HDP/centos7/2.x/updates/2.6.5.0/hdp.repo
+          dest: /etc/yum.repos.d/HDP.repo
+          mode: 0444
+
+
+      - name: Install mysql server
+        yum: name={{item}} state=latest update_cache=yes
+        with_items:
+           - mariadb*
+           - mysql-connector-java
+          ### - pdsh --> Note that pdsh is not avl as part of UTILS 22 tar. 
+           - ambari-server
+
+      - name: Start Services
+        service:
+           name: mariadb
            state: started
            enabled: yes
