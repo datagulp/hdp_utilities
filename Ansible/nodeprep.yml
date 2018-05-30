@@ -1,9 +1,9 @@
 ---
-  - name: Genenric Install on all the nodes
-    hosts: all
-    tasks:
-      - name: get server hostname
-        command: hostname
+  - name: Genenric Install on all the nodes 
+    hosts: all 
+    tasks: 
+      - name: get server hostname 
+        command: hostname 
 
       - name: Get ambari Repo
         get_url:
@@ -12,42 +12,42 @@
           mode: 0444
 
 
-      - name: Install JDK from repo ntpd, wget , ambari-agent, zip, unzip
-        yum: name={{item}} state=latest update_cache=yes
-        with_items:
+      - name: Install JDK from repo ntpd, wget , ambari-agent, zip, unzip   
+        yum: name={{item}} state=latest update_cache=yes 
+        with_items: 
            - http://avm-1.field.hortonworks.com/jdk-7u51-linux-x64.rpm
-           - ntpd*
-           - wget
-           - zip
-           - unzip
-           - ambari-agent
+           - ntpd* 
+           - wget 
+           - zip 
+           - unzip 
+           - ambari-agent 
 
-      - name: run commands to set rc.local
-        shell:
+      - name: run commands to set rc.local 
+        shell: 
            echo never > /sys/kernel/mm/transparent_hugepage/enabled
-      - name: run commands to set rc.local
-        shell:
+      - name: run commands to set rc.local 
+        shell: 
            echo never > /sys/kernel/mm/transparent_hugepage/defrag
-      - name: run commands to set swappiness
-        shell:
+      - name: run commands to set swappiness 
+        shell: 
            sysctl vm.swappiness=1
-      - name: run commands to set  ulimits
+      - name: run commands to set  ulimits  
         shell:
            printf '\n*                soft    nofile          65536\n*                hard    nofile          65536\n' >> /etc/security/limits.conf
 
-      - name: Update rc.local file
-        shell:
-           printf '\n
+      - name: Update rc.local file 
+        shell: 
+           printf '\n 
               if test -f /sys/kernel/mm/redhat_transparent_hugepage/enabled; then \n
                   echo never > /sys/kernel/mm/transparent_hugepage/enabled\n
-              fi\n\n
-
+              fi\n\n  
+              
              if test -f /sys/kernel/mm/redhat_transparent_hugepage/defrag; then \n
                   echo never > /sys/kernel/mm/transparent_hugepage/defrag\n
               fi\n\n'>> /etc/rc.local
 
       - name: Set selinux
-        shell:
+        shell: 
              setenforce 0 && sed -i 's/SELINUX=enforcing/SELINUX=permissive/g' /etc/selinux/config
 
 
@@ -59,16 +59,16 @@
         with_items: "{{ groups.all }}"
 
 
-      - name: Start Services
-        service:
+      - name: Start Services 
+        service: 
            name: ntpdate
-           state: started
-           enabled: yes
+           state: started 
+           enabled: yes 
 
 
-  - name: Management Node Installation only
+  - name: Management Node Installation only 
     hosts: ambari
-    tasks:
+    tasks: 
 
       - name: Get HDP Repo
         get_url:
@@ -77,13 +77,14 @@
           mode: 0444
 
 
-      - name: Install mysql server
+      - name: Install mysql server 
         yum: name={{item}} state=latest update_cache=yes
         with_items:
-           - mariadb*
+           - mariadb* 
            - mysql-connector-java
-          ### - pdsh --> Note that pdsh is not avl as part of UTILS 22 tar. 
-           - ambari-server
+           - MySQL-python
+          ### - pdsh
+           - ambari-server 
 
       - name: Start Services
         service:

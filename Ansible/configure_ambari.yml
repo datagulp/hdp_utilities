@@ -1,0 +1,23 @@
+---
+  - name: Configure Ambari Server and agents 
+    hosts: ambari 
+ 
+    - name: Basic/Silent ambari Server configuration 
+      command: ambari-server setup -s 
+ 
+    - name: Import Ambari Tables and Structure
+      mysql_db:
+         name: ambari
+         state: import
+         target: /var/lib/ambari-server/resources/Ambari-DDL-MySQL-CREATE.sql
+      ignore_errors: true
+
+    - name: setup mysql-connector-java jars
+       shell: ambari-server setup --jdbc-db=mysql --jdbc-driver=/usr/share/java/mysql-connector-java.jar
+
+    - name: Repoint Ambari Database to Mysql 
+       shell: ambari-server setup --jdbc-db=mysql --jdbc-driver=/usr/share/java/mysql-connector-java.jar
+
+    - name: Repoint Ambari to use Oracle JDK 
+      set_fact: 
+         ambari_java_options: "-j /usr/java/default"
