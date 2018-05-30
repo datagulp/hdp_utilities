@@ -22,6 +22,12 @@
                                    --databaseusername=ambari \
                                    --databasepassword=bigdata"
 
+
+   ##  If the Ambari Server  needs to be run as ambari user
+   ## - name: Ambari Server RunAs
+   ##   shell: sed -i 's/ambari-server.user=root/ambari-server.user=ambari/g' /etc/ambari-server/conf/ambari.properties
+
+
     - name: Repoint Ambari to use Oracle JDK 
       set_fact: 
          ambari_java_options: "-j /usr/java/default"
@@ -38,8 +44,9 @@
     hosts: all
     tasks:
 
-    - name: Ambari Agent Runas 
-      shell: sed -i 's/run_as_user=root/run_as_user=ambari/g' /etc/ambari-agent/conf/ambari-agent.ini
+   ##  If the Ambari Agent needs to be run as ambari user  
+   ## - name: Ambari Agent RunAs
+   ##   shell: sed -i 's/run_as_user=root/run_as_user=ambari/g' /etc/ambari-agent/conf/ambari-agent.ini
 
     - name: Ambari Agent Repoint
       shell: sed -i 's/localhost/grj-1.field.hortonworks.com/g' /etc/ambari-agent/conf/ambari-agent.ini
