@@ -33,9 +33,6 @@
     - name: Ambari Server restart 
       shell: /usr/sbin/ambari-server restart 
 
-    - name: Ambari Agent Repoint 
-      command: sed -i 's/localhost/grj-1.field.hortonworks.com/g' /etc/ambari-agent/conf/ambari-agent.ini
-
 
   - name: Configure Ambari Server and agents
     hosts: all
