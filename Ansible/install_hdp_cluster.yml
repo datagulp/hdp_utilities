@@ -1,0 +1,5 @@
+---
+  - name: Submit Blueprints to install the cluster. 
+  - hosts: ambari 
+    tasks: 
+      
