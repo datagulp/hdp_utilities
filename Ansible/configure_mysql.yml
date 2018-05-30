@@ -1,0 +1,30 @@
+---
+  - hosts: ambari
+    tasks: 
+       - name: Create Data base for ambari , hive, ranger, oozie 
+         mysql_db: db={{item}} state=present
+         with_items:
+           - ambari 
+           - hive
+           - oozie
+           - ranger
+           - registry
+           - streamline 
+   
+       - name: Create Data base users for ambari  
+         mysql_user: user=ambari password=bigdata host="%" priv=ambari.*:ALL state=present
+
+       - name: Create Data base users for hive
+         mysql_user: user=hive password=hive  host="%" priv=hive.*:ALL state=present
+
+       - name: Create Data base users for  oozie
+         mysql_user: user=oozie password=oozie  host="%" priv=oozie.*:ALL state=present
+
+       - name: Create Data base users for ranger
+         mysql_user: user=ranger password=rangerroot  host="%" priv=*.*:ALL state=present
+
+       - name: Create Data base users for registry
+         mysql_user: user=registry password=registry  host="%" priv=registry.*:ALL state=present
+
+       - name: Create Data base users for streamline
+         mysql_user: user=streamline password=streamline  host="%" priv=streamline.*:ALL state=present
