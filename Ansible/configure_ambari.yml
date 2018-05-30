@@ -1,10 +1,8 @@
 ---
   - name: Configure Ambari Server and agents 
     hosts: ambari 
- 
-    - name: Basic/Silent ambari Server configuration 
-      command: ambari-server setup -s 
- 
+    tasks: 
+  
     - name: Import Ambari Tables and Structure
       mysql_db:
          name: ambari
@@ -13,11 +11,41 @@
       ignore_errors: true
 
     - name: setup mysql-connector-java jars
-       shell: ambari-server setup --jdbc-db=mysql --jdbc-driver=/usr/share/java/mysql-connector-java.jar
+      shell: /usr/sbin/ambari-server setup --jdbc-db=mysql --jdbc-driver=/usr/share/java/mysql-connector-java.jar
 
     - name: Repoint Ambari Database to Mysql 
-       shell: ambari-server setup --jdbc-db=mysql --jdbc-driver=/usr/share/java/mysql-connector-java.jar
+      set_fact: 
+         ambari_database_options: "--database=mysql \ 
+                                   --databasehost=grj-1.field.hortonworks.com  \
+                                   --databaseport=3306 \ 
+                                   --databasename=ambari \
+                                   --databaseusername=ambari \
+                                   --databasepassword=bigdata"
 
     - name: Repoint Ambari to use Oracle JDK 
       set_fact: 
          ambari_java_options: "-j /usr/java/default"
+
+    - name: Basic/Silent ambari Server configuration
+      shell: /usr/sbin/ambari-server setup -s {{ ambari_java_options }} {{ ambari_database_options }} 
+
+
+    - name: Ambari Server restart 
+      shell: /usr/sbin/ambari-server restart 
+
+    - name: Ambari Agent Repoint 
+      command: sed -i 's/localhost/grj-1.field.hortonworks.com/g' /etc/ambari-agent/conf/ambari-agent.ini
+
+
+  - name: Configure Ambari Server and agents
+    hosts: all
+    tasks:
+
+    - name: Ambari Agent Runas 
+      shell: sed -i 's/run_as_user=root/run_as_user=ambari/g' /etc/ambari-agent/conf/ambari-agent.ini
+
+    - name: Ambari Agent Repoint
+      shell: sed -i 's/localhost/grj-1.field.hortonworks.com/g' /etc/ambari-agent/conf/ambari-agent.ini
+
+    - name:
+      shell: /usr/sbin/ambari-agent restart 
