@@ -1,5 +1,6 @@
 ---
   - name: Submit Blueprints to install the cluster. 
-  - hosts: ambari 
+    hosts: ambari 
     tasks: 
-      
+      - name: Register the blueprint ansible-hdp-cluster via Shell 
+        shell:  executeBP.sh 

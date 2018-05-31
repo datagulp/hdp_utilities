@@ -1,0 +1,33 @@
+{
+  "blueprint": "ansible-hdp",
+  "default_password": "admin",
+  "host_groups": [
+    {
+      "name": "ambari",
+      "hosts": [
+        {
+          "fqdn": "grj-1.field.hortonworks.com"
+        }
+      ]
+    },
+    {
+      "name": "master",
+      "hosts": [
+        {
+          "fqdn": "grj-2.field.hortonworks.com"
+        }
+      ]
+    },
+    {
+      "name": "slaves_1",
+      "hosts": [
+        {
+          "fqdn": "grj-3.field.hortonworks.com"
+        },
+        {
+          "fdqn": "grj-4.field.hortonworks.com"
+        }
+      ]
+    }
+  ]
+}

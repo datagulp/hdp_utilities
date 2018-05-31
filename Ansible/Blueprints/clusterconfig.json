@@ -1,0 +1,139 @@
+{
+  "configurations" : [],
+  "host_groups" : [
+    {
+      "name" : "master",
+      "components" : [
+        {
+          "name" : "NAMENODE"
+        },
+        {
+          "name": "SECONDARY_NAMENODE"
+         },
+        {
+          "name" : "ZOOKEEPER_SERVER"
+        },
+        {
+          "name" : "RESOURCEMANAGER"
+        },         
+        {
+          "name" : "HIVE_SERVER"
+        },
+        {
+          "name" : "HIVE_METASTORE"
+        },
+        {
+          "name" : "MYSQL_SERVER"
+        },
+        {
+          "name" : "HCAT"
+        },
+        {
+           "name": "WEBHCAT_SERVER"
+         },
+        {
+          "name" : "PIG"
+        },
+        {
+          "name" : "SQOOP"
+        },
+        {
+          "name" : "SLIDER"
+        },
+        {
+          "name" : "APP_TIMELINE_SERVER"
+        },
+        {
+          "name" : "METRICS_MONITOR"
+        },
+        {
+          "name" : "SPARK_JOBHISTORYSERVER"
+        },
+        {
+          "name" : "RANGER_USERSYNC"
+        },
+        {
+          "name" : "RANGER_ADMIN"
+        }
+      ],
+      "cardinality" : "1"
+    },
+    {
+      "name" : "slaves_1",
+      "components" : [
+        {
+          "name" : "DATANODE"
+        },
+        {
+          "name" : "NODEMANAGER"
+        },
+        {
+          "name" : "HDFS_CLIENT"
+        },        
+        {
+          "name" : "YARN_CLIENT"
+        },
+        {
+          "name" : "MAPREDUCE2_CLIENT"
+        },
+        {
+          "name" : "ZOOKEEPER_CLIENT"
+        },
+        {
+          "name" : "TEZ_CLIENT"
+        },
+        {
+          "name" : "HIVE_CLIENT"
+        },
+        {
+          "name" : "PIG"
+        },
+        {
+          "name" : "SQOOP"
+        },
+        {
+          "name" : "SLIDER"
+        },
+        {
+          "name" : "FLUME_HANDLER"
+        },
+        {
+          "name" : "METRICS_MONITOR"
+        },
+        {
+          "name" : "SPARK_CLIENT"
+        }    
+      ],
+      "cardinality" : "1"
+    }, 
+    {
+      "name" : "ambari",
+      "components" : [
+        {
+          "name" : "AMBARI_SERVER"
+        },
+        {
+          "name" : "METRICS_MONITOR"
+        },
+        {
+          "name" : "DATANODE"
+        },
+        {
+          "name" : "NODEMANAGER"
+        },        
+        {
+          "name" : "METRICS_COLLECTOR"
+        },
+        {
+          "name" : "METRICS_GRAFANA"
+        }                
+      ],
+      "cardinality" : "1"
+    }        
+  ],
+  "Blueprints" : {
+    "blueprint_name" : "ansible-hdp",
+    "stack_name" : "HDP",
+    "stack_version" : "2.6"
+  }
+}
