@@ -1,0 +1,244 @@
+
+dn: dc=ganeshrj,dc=com
+objectClass: dcObject
+objectClass: organization
+dc: ganeshrj
+o: GaneshRajagopal
+
+dn: dc=hadoop,dc=ganeshrj,dc=com
+objectClass: dcObject
+objectClass: organization
+dc: hadoop
+o: GaneshRajagopal
+
+dn: ou=people,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: organizationalUnit
+objectClass: top
+ou: people
+
+
+dn: ou=groups,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: organizationalUnit
+objectClass: top
+ou: group
+
+
+dn: uid=admin,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: admin
+sn: admin
+uid: admin
+userPassword: admin
+
+
+dn: uid=hdfs,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: HDFS
+sn: hdfs
+uid: hdfs
+userPassword: hdfs
+
+dn: uid=hive,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: HIVE
+sn: hive
+uid: hive
+userPassword: hive
+
+dn: uid=zookeeper,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: zookeeper
+sn: zookeeper
+uid: zookeeper
+userPassword: zookeeper
+
+dn: uid=oozie,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: oozie
+sn: oozie
+uid: oozie
+userPassword: oozie
+
+dn: uid=ams,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: ams
+sn: ams
+uid: ams
+userPassword: ams
+
+dn: uid=falcon,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: falcon
+sn: falcon
+uid: falcon
+userPassword: falcon
+
+dn: uid=ranger,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: ranger
+sn: ranger
+uid: ranger
+userPassword: ranger
+
+dn: uid=tez,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: tez
+sn: tez
+uid: tez
+userPassword: tez
+
+dn: uid=spark,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: spark
+sn: spark
+uid: spark
+userPassword: spark
+
+dn: uid=ambari-qa,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: ambari-qa
+sn: ambari-qa
+uid: ambari-qa
+userPassword: ambari-qa
+
+dn: uid=flume,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: flume
+sn: flume
+uid: flume
+userPassword: flume
+
+dn: uid=sqoop,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: sqoop
+sn: sqoop
+uid: sqoop
+userPassword: sqoop
+
+dn: uid=yarn,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: yarn
+sn: yarn
+uid: yarn
+userPassword: yarn
+
+dn: uid=mapred,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: mapred
+sn: mapred
+uid: mapred
+userPassword: mapred
+
+dn: uid=knox,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: knox
+sn: knox
+uid: knox
+userPassword: knox
+
+dn: uid=hcat,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: hcat
+sn: hcat
+uid: hcat
+userPassword: hcat
+
+dn: uid=httpfs,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: httpfs
+sn: httpfs
+uid: httpfs
+userPassword: httpfs
+
+dn: uid=storm,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+cn: storm
+sn: storm
+uid: storm
+userPassword: storm
+
+dn: cn=admin,ou=groups,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: groupOfNames
+objectClass: top
+cn: admin
+member: uid=admin,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+
+dn: cn=hadoop,ou=groups,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: groupOfNames
+objectClass: top
+cn: hadoop
+member: uid=hdfs,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+member: uid=hive,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+member: uid=zookeeper,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+member: uid=oozie,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+member: uid=ams,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+member: uid=falcon,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+member: uid=ranger,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+member: uid=tez,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+member: uid=spark,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+member: uid=ambari-qa,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+member: uid=flume,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+member: uid=sqoop,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+member: uid=yarn,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+member: uid=mapred,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+member: uid=knox,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+member: uid=hcat,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+member: uid=httpfs,ou=people,dc=hadoop,dc=ganeshrj,dc=com
+member: uid=storm,ou=people,dc=hadoop,dc=ganeshrj,dc=com
