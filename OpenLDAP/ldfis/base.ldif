@@ -1,0 +1,16 @@
+dn: dc=ganeshrj,dc=com
+objectClass: dcObject
+objectClass: organization
+dc: ganeshrj
+o: GaneshRajagopal
+
+dn: dc=hadoop,dc=ganeshrj,dc=com
+objectClass: dcObject
+objectClass: organization
+dc: hadoop
+o: GaneshRajagopal
+
+dn: ou=people,dc=hadoop,dc=ganeshrj,dc=com
+objectClass: organizationalUnit
+objectClass: top
+ou: people
