@@ -1,3 +1,6 @@
+### This python code scans RM output and gets the generates alert if the Job crosses the threshhold. 
+### Copyright @ Ganesh Rajagopal
+
 #!/bin/python
 
 import json
