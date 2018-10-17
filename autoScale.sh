@@ -1,3 +1,5 @@
+### Copyright @Ganesh Rajagopal
+
 #!/bin/bash
 
 echo "Started"
