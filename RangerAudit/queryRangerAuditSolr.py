@@ -34,7 +34,7 @@ def executeFinalQuery(finalUrl, totalNum):
    if status == 0:
       queryOutFile = open(outFile, 'w')
       print "Downloading Output to " + outFile
-      ##queryOutFile.write(output)
+      queryOutFile.write(output)
       queryOutFile.close()
       print "Download Complete to current directory. Please export the file " + outFile + " and open using Microsoft Excel "
 
